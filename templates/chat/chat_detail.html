@@ -1,0 +1,267 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Chat - {{ chat_session.title }} - DocuMind{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Chat Header -->
+    <div class="gradient-bg py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'dashboard' %}" class="text-white hover:text-yellow-300 transition-colors">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">{{ chat_session.title }}</h1>
+                        <p class="text-white text-opacity-90">{{ chat_session.document.title }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="exportChat()" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300">
+                        <i class="fas fa-download mr-2"></i>
+                        Export
+                    </button>
+                    <a href="{% url 'chat:chat_list' %}" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300">
+                        <i class="fas fa-list mr-2"></i>
+                        All Chats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- OpenAI Warning Banner -->
+    {% if not openai_configured %}
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">
+                        OpenAI API Key Not Configured
+                    </h3>
+                    <div class="mt-2 text-sm text-yellow-700">
+                        <p>Document upload works, but AI chat is disabled. To enable AI chat:</p>
+                        <ol class="list-decimal list-inside mt-2 space-y-1">
+                            <li>Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" class="underline">OpenAI Platform</a></li>
+                            <li>Update OPENAI_API_KEY in your .env file</li>
+                            <li>Restart the application</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Chat Container -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="h-96 overflow-y-auto p-6 space-y-4">
+                {% for message in messages %}
+                    <div class="chat-bubble {% if message.role == 'user' %}flex justify-end{% else %}flex justify-start{% endif %}">
+                        <div class="max-w-xs lg:max-w-md {% if message.role == 'user' %}bg-blue-500 text-white{% else %}bg-gray-100 text-gray-900{% endif %} rounded-2xl px-4 py-3">
+                            <div class="flex items-start space-x-2">
+                                {% if message.role == 'ai' %}
+                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-robot text-white text-sm"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <p class="text-sm">{{ message.content }}</p>
+                                    <p class="text-xs {% if message.role == 'user' %}text-blue-100{% else %}text-gray-500{% endif %} mt-1">
+                                        {{ message.timestamp|date:"H:i" }}
+                                    </p>
+                                </div>
+                                {% if message.role == 'user' %}
+                                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-user text-white text-sm"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                <!-- Loading indicator -->
+                <div id="loading-indicator" class="hidden flex justify-start">
+                    <div class="bg-gray-100 text-gray-900 rounded-2xl px-4 py-3">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-sm"></i>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="border-t border-gray-200 p-6">
+                <form id="chat-form" class="flex space-x-4">
+                    {% csrf_token %}
+                    <div class="flex-1">
+                        <input type="text" id="message-input" placeholder="Ask a question about your document..." 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               required>
+                    </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300 hover-lift">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+                
+                <!-- Quick Questions -->
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600 mb-2">Quick questions:</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="askQuestion('What is this document about?')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm transition-colors duration-300">
+                            What is this document about?
+                        </button>
+                        <button onclick="askQuestion('Summarize the main points')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm transition-colors duration-300">
+                            Summarize the main points
+                        </button>
+                        <button onclick="askQuestion('What are the key findings?')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm transition-colors duration-300">
+                            What are the key findings?
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    
+    // Auto-scroll to bottom
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Send message
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const message = messageInput.value.trim();
+        if (!message) return;
+        
+        // Add user message to chat
+        addMessageToChat('user', message);
+        messageInput.value = '';
+        
+        // Show loading indicator
+        loadingIndicator.classList.remove('hidden');
+        scrollToBottom();
+        
+        try {
+            const response = await fetch('{% url "chat:send_message" chat_session.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Add AI response to chat
+                addMessageToChat('ai', data.ai_message.content, data.ai_message.timestamp);
+            } else {
+                addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+            }
+        } catch (error) {
+            addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+        } finally {
+            loadingIndicator.classList.add('hidden');
+            scrollToBottom();
+        }
+    });
+    
+    // Add message to chat
+    function addMessageToChat(role, content, timestamp = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-bubble ${role === 'user' ? 'flex justify-end' : 'flex justify-start'}`;
+        
+        const time = timestamp ? new Date(timestamp).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        }) : new Date().toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        messageDiv.innerHTML = `
+            <div class="max-w-xs lg:max-w-md ${role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'} rounded-2xl px-4 py-3">
+                <div class="flex items-start space-x-2">
+                    ${role === 'ai' ? `
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                    ` : ''}
+                    <div class="flex-1">
+                        <p class="text-sm">${content}</p>
+                        <p class="text-xs ${role === 'user' ? 'text-blue-100' : 'text-gray-500'} mt-1">
+                            ${time}
+                        </p>
+                    </div>
+                    ${role === 'user' ? `
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        chatMessages.insertBefore(messageDiv, loadingIndicator);
+        scrollToBottom();
+    }
+    
+    // Ask quick question
+    window.askQuestion = function(question) {
+        messageInput.value = question;
+        chatForm.dispatchEvent(new Event('submit'));
+    };
+    
+    // Export chat
+    window.exportChat = async function() {
+        try {
+            const response = await fetch('{% url "chat:export_chat" chat_session.id %}');
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Create download link
+                const link = document.createElement('a');
+                link.href = data.download_url;
+                link.download = `chat_${new Date().toISOString().split('T')[0]}.docx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('Error exporting chat: ' + data.error);
+            }
+        } catch (error) {
+            alert('Error exporting chat. Please try again.');
+        }
+    };
+    
+    // Initial scroll to bottom
+    scrollToBottom();
+});
+</script>
+{% endblock %}

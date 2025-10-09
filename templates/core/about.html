@@ -1,0 +1,233 @@
+{% extends 'base/base.html' %}
+
+{% block title %}About - DocuMind{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="gradient-bg py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+            About <span class="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">DocuMind</span>
+        </h1>
+        <p class="text-xl text-white text-opacity-90 max-w-3xl mx-auto">
+            We're revolutionizing how people interact with documents through the power of AI and natural language processing.
+        </p>
+    </div>
+</section>
+
+<!-- Mission Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">
+                    Our <span class="gradient-text">Mission</span>
+                </h2>
+                <p class="text-lg text-gray-600 mb-6">
+                    DocuMind was born from a simple idea: what if you could have a conversation with your documents? 
+                    We believe that documents shouldn't be static files that sit in folders, but dynamic resources 
+                    that can answer questions, provide insights, and help you work more efficiently.
+                </p>
+                <p class="text-lg text-gray-600 mb-8">
+                    Our mission is to make every document intelligent, accessible, and interactive through 
+                    cutting-edge AI technology while maintaining the highest standards of privacy and security.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">2024</div>
+                        <div class="text-gray-600">Founded</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">AI-First</div>
+                        <div class="text-gray-600">Approach</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8">
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Innovation</h3>
+                            <p class="text-gray-600">Pushing the boundaries of document AI</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Security</h3>
+                            <p class="text-gray-600">Your privacy is our priority</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-users text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">Community</h3>
+                            <p class="text-gray-600">Building tools for everyone</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-6">
+                Powered by <span class="gradient-text">Advanced AI</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                DocuMind leverages state-of-the-art AI technologies to deliver intelligent document interactions
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white rounded-2xl p-6 text-center hover-lift transition-all duration-300">
+                <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-brain text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">OpenAI GPT</h3>
+                <p class="text-gray-600">Advanced language understanding and generation</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 text-center hover-lift transition-all duration-300">
+                <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Vector Search</h3>
+                <p class="text-gray-600">Semantic search with FAISS and ChromaDB</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 text-center hover-lift transition-all duration-300">
+                <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-file-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">PDF Processing</h3>
+                <p class="text-gray-600">PyMuPDF for accurate text extraction</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 text-center hover-lift transition-all duration-300">
+                <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-code text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Django Framework</h3>
+                <p class="text-gray-600">Robust and scalable web application</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-6">
+                Meet the <span class="gradient-text">Team</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                We're a passionate team of developers, AI researchers, and designers working to make documents more intelligent
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <i class="fas fa-user text-white text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">AI Developer</h3>
+                <p class="text-gray-600 mb-4">Leading the AI and machine learning initiatives</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#" class="text-blue-500 hover:text-blue-600">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-blue-500 hover:text-blue-600">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-32 h-32 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <i class="fas fa-user text-white text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Full Stack Developer</h3>
+                <p class="text-gray-600 mb-4">Building the web application and user experience</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#" class="text-green-500 hover:text-green-600">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-green-500 hover:text-green-600">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-32 h-32 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center">
+                    <i class="fas fa-user text-white text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">UX Designer</h3>
+                <p class="text-gray-600 mb-4">Creating intuitive and beautiful user interfaces</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#" class="text-purple-500 hover:text-purple-600">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-purple-500 hover:text-purple-600">
+                        <i class="fab fa-dribbble text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-20 gradient-bg">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-6">
+            Get in <span class="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">Touch</span>
+        </h2>
+        <p class="text-xl text-white text-opacity-90 mb-8 max-w-2xl mx-auto">
+            Have questions about DocuMind? We'd love to hear from you!
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div class="glassmorphism rounded-2xl p-6">
+                <i class="fas fa-envelope text-white text-3xl mb-4"></i>
+                <h3 class="text-xl font-bold text-white mb-2">Email</h3>
+                <p class="text-white text-opacity-90">support@documind.ai</p>
+            </div>
+            
+            <div class="glassmorphism rounded-2xl p-6">
+                <i class="fas fa-comments text-white text-3xl mb-4"></i>
+                <h3 class="text-xl font-bold text-white mb-2">Live Chat</h3>
+                <p class="text-white text-opacity-90">Available 24/7</p>
+            </div>
+            
+            <div class="glassmorphism rounded-2xl p-6">
+                <i class="fas fa-phone text-white text-3xl mb-4"></i>
+                <h3 class="text-xl font-bold text-white mb-2">Phone</h3>
+                <p class="text-white text-opacity-90">+1 (555) 123-4567</p>
+            </div>
+        </div>
+        
+        <a href="{% url 'accounts:register' %}" class="bg-white text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all duration-300 hover-lift shadow-lg inline-block">
+            <i class="fas fa-rocket mr-2"></i>
+            Start Your Free Trial
+        </a>
+    </div>
+</section>
+{% endblock %}

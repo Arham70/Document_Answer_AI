@@ -1,0 +1,126 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Chat Sessions - DocuMind{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Chat Sessions</h1>
+                <p class="text-gray-600 mt-2">Your conversations with AI about your documents</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300 hover-lift">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+        
+        {% if chat_sessions %}
+            <!-- Chat Sessions Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for chat in chat_sessions %}
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <!-- Chat Header -->
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-comments text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-lg">{{ chat.title }}</h3>
+                                        <p class="text-blue-100 text-sm">{{ chat.document.title }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Details -->
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <!-- Stats -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-gray-900">{{ chat.messages.count }}</div>
+                                        <div class="text-sm text-gray-600">Messages</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-gray-900">{{ chat.created_at|date:"M d" }}</div>
+                                        <div class="text-sm text-gray-600">Created</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Last Message Preview -->
+                                {% if chat.messages.last %}
+                                    <div class="bg-gray-50 rounded-xl p-4">
+                                        <p class="text-sm text-gray-700">
+                                            <strong>{{ chat.messages.last.role|title }}:</strong>
+                                            {{ chat.messages.last.content|truncatechars:100 }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-2">
+                                            {{ chat.messages.last.timestamp|date:"M d, Y H:i" }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Actions -->
+                                <div class="space-y-2">
+                                    <a href="{% url 'chat:chat_detail' chat.id %}" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300 text-center block">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        Continue Chat
+                                    </a>
+                                    
+                                    <button onclick="exportChat('{{ chat.id }}')" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-300">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Export Chat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-20">
+                <div class="w-32 h-32 bg-gray-100 rounded-full mx-auto mb-8 flex items-center justify-center">
+                    <i class="fas fa-comments text-gray-400 text-5xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">No chat sessions yet</h2>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                    Start a conversation with your documents to see your chat sessions here
+                </p>
+                <a href="{% url 'dashboard' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold transition-colors duration-300 hover-lift">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+async function exportChat(chatId) {
+    try {
+        const response = await fetch(`/chat/${chatId}/export/`);
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Create download link
+            const link = document.createElement('a');
+            link.href = data.download_url;
+            link.download = `chat_${new Date().toISOString().split('T')[0]}.docx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            alert('Error exporting chat: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error exporting chat. Please try again.');
+    }
+}
+</script>
+{% endblock %}

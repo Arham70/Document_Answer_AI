@@ -1,0 +1,100 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Login - DocuMind{% endblock %}
+
+{% block content %}
+<div class="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="glassmorphism rounded-2xl p-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-sign-in-alt text-white text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-2">Welcome Back</h2>
+                <p class="text-white text-opacity-90 mb-8">Sign in to your DocuMind account</p>
+            </div>
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-white mb-2">
+                        Username
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="text-red-300 text-sm mt-1">
+                            {{ form.username.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-white mb-2">
+                        Password
+                    </label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="text-red-300 text-sm mt-1">
+                            {{ form.password.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-white text-opacity-90">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <div class="text-sm">
+                        <a href="{% url 'accounts:password_reset' %}" class="text-white font-medium hover:text-yellow-300 transition-colors">
+                            Forgot password?
+                        </a>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-white text-blue-600 py-3 px-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300 hover-lift">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-white text-opacity-90">
+                    Don't have an account?
+                    <a href="{% url 'accounts:register' %}" class="text-white font-semibold hover:text-yellow-300 transition-colors">
+                        Create one here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus, input[type="password"]:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+    
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+</style>
+{% endblock %}

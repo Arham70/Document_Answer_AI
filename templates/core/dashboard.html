@@ -1,0 +1,219 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard - DocuMind{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Dashboard Header -->
+    <div class="gradient-bg py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-white mb-4">
+                    Welcome back, <span class="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">{{ user.first_name|default:user.username }}</span>!
+                </h1>
+                <p class="text-xl text-white text-opacity-90 mb-8">
+                    Manage your documents and start intelligent conversations
+                </p>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                    <div class="glassmorphism rounded-2xl p-6 text-white">
+                        <div class="text-3xl font-bold mb-2">{{ total_documents }}</div>
+                        <div class="text-lg opacity-90">Documents</div>
+                    </div>
+                    <div class="glassmorphism rounded-2xl p-6 text-white">
+                        <div class="text-3xl font-bold mb-2">{{ total_chats }}</div>
+                        <div class="text-lg opacity-90">Chat Sessions</div>
+                    </div>
+                    <div class="glassmorphism rounded-2xl p-6 text-white">
+                        <div class="text-3xl font-bold mb-2">{{ documents.count }}</div>
+                        <div class="text-lg opacity-90">Processed</div>
+                    </div>
+                    <div class="glassmorphism rounded-2xl p-6 text-white">
+                        <div class="flex items-center justify-center mb-2">
+                            {% if openai_configured %}
+                                <i class="fas fa-check-circle text-green-300 text-3xl"></i>
+                            {% else %}
+                                <i class="fas fa-exclamation-triangle text-yellow-300 text-3xl"></i>
+                            {% endif %}
+                        </div>
+                        <div class="text-lg opacity-90">
+                            {% if openai_configured %}AI Active{% else %}AI Disabled{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Documents Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900">Your Documents</h2>
+                        <a href="{% url 'documents:document_upload' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300 hover-lift">
+                            <i class="fas fa-plus mr-2"></i>
+                            Upload Document
+                        </a>
+                    </div>
+                    
+                    {% if documents %}
+                        <div class="space-y-4">
+                            {% for document in documents %}
+                                <div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-300">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                                <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900">{{ document.title }}</h3>
+                                                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                                    <span><i class="fas fa-calendar mr-1"></i>{{ document.uploaded_at|date:"M d, Y" }}</span>
+                                                    <span><i class="fas fa-file-alt mr-1"></i>{{ document.word_count }} words</span>
+                                                    <span class="flex items-center">
+                                                        {% if document.status == 'processed' %}
+                                                            <i class="fas fa-check-circle text-green-500 mr-1"></i>Processed
+                                                        {% elif document.status == 'processing' %}
+                                                            <i class="fas fa-spinner fa-spin text-blue-500 mr-1"></i>Processing
+                                                        {% else %}
+                                                            <i class="fas fa-exclamation-triangle text-red-500 mr-1"></i>Failed
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex items-center space-x-2">
+                                            {% if document.status == 'processed' %}
+                                                <a href="{% url 'chat:start_chat' document.id %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300">
+                                                    <i class="fas fa-comments mr-1"></i>Chat
+                                                </a>
+                                            {% endif %}
+                                            <a href="{% url 'documents:document_detail' document.id %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300">
+                                                <i class="fas fa-eye mr-1"></i>View
+                                            </a>
+                                            <a href="{% url 'documents:document_delete' document.id %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300">
+                                                <i class="fas fa-trash mr-1"></i>Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <div class="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
+                                <i class="fas fa-file-pdf text-gray-400 text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">No documents yet</h3>
+                            <p class="text-gray-600 mb-8">Upload your first PDF to start chatting with AI</p>
+                            <a href="{% url 'documents:document_upload' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-300 hover-lift">
+                                <i class="fas fa-upload mr-2"></i>
+                                Upload Document
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-8">
+                <!-- Recent Chats -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Chats</h3>
+                    
+                    {% if recent_chats %}
+                        <div class="space-y-4">
+                            {% for chat in recent_chats %}
+                                <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-300">
+                                    <h4 class="font-semibold text-gray-900 mb-2">{{ chat.title }}</h4>
+                                    <p class="text-sm text-gray-600 mb-2">{{ chat.document.title }}</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-gray-500">{{ chat.updated_at|date:"M d, Y" }}</span>
+                                        <a href="{% url 'chat:chat_detail' chat.id %}" class="text-blue-500 hover:text-blue-600 text-sm font-medium">
+                                            Continue <i class="fas fa-arrow-right ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <a href="{% url 'chat:chat_list' %}" class="text-blue-500 hover:text-blue-600 font-medium">
+                                View All Chats <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-comments text-gray-400 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600">No recent chats</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+                    
+                    <div class="space-y-4">
+                        <a href="{% url 'documents:document_upload' %}" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-300">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-upload text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Upload Document</h4>
+                                <p class="text-sm text-gray-600">Add a new PDF file</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'chat:chat_list' %}" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-300">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-comments text-green-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">View Chats</h4>
+                                <p class="text-sm text-gray-600">See all conversations</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'accounts:profile' %}" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-colors duration-300">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user text-purple-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Profile Settings</h4>
+                                <p class="text-sm text-gray-600">Manage your account</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Tips -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">💡 Pro Tips</h3>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
+                            <p>Ask specific questions for better AI responses</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
+                            <p>Upload documents in PDF format for best results</p>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <i class="fas fa-lightbulb text-yellow-500 mt-1"></i>
+                            <p>Export conversations to share insights</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
