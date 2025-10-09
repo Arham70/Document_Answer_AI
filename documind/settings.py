@@ -66,10 +66,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'documind.wsgi.application'
 
 # Database
-if os.getenv('DATABASE_URL'):
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL and DATABASE_URL != 'postgresql://username:password@host:port/database':
     import dj_database_url
     DATABASES = {
-        'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+        'default': dj_database_url.parse(DATABASE_URL)
     }
 else:
     DATABASES = {
